@@ -1,0 +1,91 @@
+{% extends 'layout base/base_cipher.html' %} 
+{% block title %} 
+	Auto-key Vigenere Cipher
+{% endblock %}
+{% block heading %} 
+    Auto-key Vigenere Cipher
+{% endblock %}
+{% set cipher_route = url_for('autokey.autoKeyVigenere') %}
+
+{% block form_section %}
+    {% if encrypt %}
+    <!--encrypt-->
+    <div class="tab-pane fade show {{ 'active' if not decrypt }}" id="encrypt" role="tabpanel" aria-labelledby="encrypt-tab">
+        <form class="p-5" method="post" action="/auto-key-vigenere-cipher/encrypt" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Plain File</label>
+                <input class="form-control" name="file-plaintext" style="height: 40px;" type="file" id="formFile">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Plain Text</label>
+                <textarea class="form-control" name="plaintext" style="height: 150px;" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Key</label>
+                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Key">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-2" style="height: 50px;">Encrypt Now</button>
+        </form>
+    </div>
+    {% endif %}
+    
+    {% if not encrypt %}
+    <!--decrypt-->
+    <div class="tab-pane fade show {{ 'active' if not encrypt }}" id="decrypt" role="tabpanel" aria-labelledby="decrypt-tab enctype="multipart/form-data"">
+        <form class="p-5" method="post" action="/auto-key-vigenere-cipher/decrypt">
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Cipher File</label>
+                <input class="form-control" name="file-ciphertext" style="height: 40px;" type="file" id="formFile">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Cipher Text</label>
+                <textarea class="form-control" name="ciphertext" style="height: 150px;" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Key</label>
+                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Key">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-2" style="height: 50px;">Decrypt Now</button>
+        </form>
+    </div>
+    {% endif %}
+{% endblock %}
+{% block result_section %}
+    <h1 class="fw-bold">{{"Result"|upper}}</h1>
+
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label for="resultText" class="form-label">
+            {{ 'Cipher Text' if encrypt else 'Plain Text' }}
+        </label>
+        <textarea class="form-control" id="resultText" style="height: 150px;" readonly>
+    {{ result_ciphertext if encrypt else result_plaintext }}
+        </textarea>
+    </div>
+
+    <!-- Format Options -->
+    <input class="form-check-input" type="radio" name="ciphertext_group" id="ciphertext-nospace" value="nospace" {% if format_mode == 'nospace' %}checked{% endif %}>
+    <label class="form-check-label" for="ciphertext-nospace">Without space</label>
+
+    <input class="form-check-input" type="radio" name="ciphertext_group" id="ciphertext-5" value="5" {% if format_mode == '5' %}checked{% endif %}>
+    <label class="form-check-label" for="ciphertext-5">Five alphabet group</label>
+
+      
+    
+    <!-- Download Button -->
+    <form method="POST" action="{{ url_for('autokey.download_result') }}">
+        <input type="hidden" name="result" value="{{ result_ciphertext if encrypt else result_plaintext }}">
+        <input type="hidden" name="filename" value="{{ 'ciphertext.txt' if encrypt else 'plaintext.txt' }}">
+        <button type="submit" class="btn btn-primary w-100 mt-2"
+                {% if not result_ciphertext and not result_plaintext %} disabled {% endif %}>
+            Download Hasil
+        </button>
+    </form>
+    
+
+{% endblock %}
