@@ -10,26 +10,30 @@ class AutoKeyVigenereCipher:
         self.result = ''
 
     def generate_keystream(self, text):
-        return (self.key + text)[:len(text)]
+    # Ambil hanya huruf A-Z dari text
+        filtered_text = ''.join(c for c in text if c in self.alphabet)
+        return (self.key + filtered_text)[:len(filtered_text)]
 
     def encrypt(self):
         if not self.plaintext:
             raise ValueError("Plaintext tidak boleh kosong untuk proses enkripsi.")
 
-        keystream = self.generate_keystream(self.plaintext)
         result = []
+        keystream_index = 0
+        keystream = self.generate_keystream(self.plaintext)
 
-        for p_char, k_char in zip(self.plaintext, keystream):
+        for p_char in self.plaintext:
             if p_char in self.alphabet:
+                k_char = keystream[keystream_index]
                 p_idx = self.alphabet.index(p_char)
                 k_idx = self.alphabet.index(k_char)
                 c_idx = (p_idx + k_idx) % 26
                 result.append(self.alphabet[c_idx])
-            else:
-                result.append(p_char)
+                keystream_index += 1
 
         self.result = ''.join(result)
         return self.result
+
 
     def decrypt(self):
         if not self.ciphertext:
@@ -47,9 +51,7 @@ class AutoKeyVigenereCipher:
                 p_char = self.alphabet[p_idx]
                 result.append(p_char)
                 key += p_char  # extend key with plaintext
-                key = key[1:]  # remove first character
-            else:
-                result.append(c_char)
+                key = key[1:]
 
         self.result = ''.join(result)
         return self.result

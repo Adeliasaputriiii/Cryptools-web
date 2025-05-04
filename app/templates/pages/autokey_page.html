@@ -63,19 +63,34 @@
         <label for="resultText" class="form-label">
             {{ 'Cipher Text' if encrypt else 'Plain Text' }}
         </label>
-        <textarea class="form-control" id="resultText" style="height: 150px;" readonly>
-    {{ result_ciphertext if encrypt else result_plaintext }}
-        </textarea>
+        <textarea name="result" class="form-control" rows="6" readonly>{{ result_ciphertext or result_plaintext }}</textarea>
     </div>
 
     <!-- Format Options -->
-    <input class="form-check-input" type="radio" name="ciphertext_group" id="ciphertext-nospace" value="nospace" {% if format_mode == 'nospace' %}checked{% endif %}>
-    <label class="form-check-label" for="ciphertext-nospace">Without space</label>
-
-    <input class="form-check-input" type="radio" name="ciphertext_group" id="ciphertext-5" value="5" {% if format_mode == '5' %}checked{% endif %}>
-    <label class="form-check-label" for="ciphertext-5">Five alphabet group</label>
-
-      
+    <form method="POST" action="{{ url_for('autokey.autoKeyVigenereEncrypt' if encrypt else 'autokey.autoKeyVigenereDecrypt') }}">
+        <!-- Hidden fields to retain existing inputs -->
+        <input type="hidden" name="key" value="{{ form.get('key', '') }}">
+        {% if encrypt %}
+            <input type="hidden" name="plaintext" value="{{ form.get('plaintext', '') }}">
+        {% else %}
+            <input type="hidden" name="ciphertext" value="{{ form.get('ciphertext', '') }}">
+        {% endif %}
+    
+        <!-- Format Options -->
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="format" id="noSpace" value="normal"
+                   {% if form.get('format', 'normal') == 'normal' %}checked{% endif %}>
+            <label class="form-check-label" for="noSpace">Without space</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="format" id="group5" value="group5"
+                   {% if form.get('format') == 'group5' %}checked{% endif %}>
+            <label class="form-check-label" for="group5">Five-letter group</label>
+        </div>
+    
+        <!-- Button to trigger re-format -->
+        <button type="submit" class="btn btn-secondary w-100 mt-2">Reformat</button>
+    </form>    
     
     <!-- Download Button -->
     <form method="POST" action="{{ url_for('autokey.download_result') }}">

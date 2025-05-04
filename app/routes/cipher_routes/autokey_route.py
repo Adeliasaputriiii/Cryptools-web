@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, send_file
 import io
 from ciphers.autokey_cipher import AutoKeyVigenereCipher
+from werkzeug.utils import secure_filename
 
 autokey_bp = Blueprint('autokey', __name__)
 
@@ -101,8 +102,7 @@ def download_result():
 
 def format_result(text, mode):
     if mode == 'group5':
-        # Format hasil teks menjadi grup 5 huruf
-        return ' '.join(text[i:i+5] for i in range(0, len(text), 5))
-    return text
-
+        cleaned = text.replace(" ", "")  # hilangkan spasi dulu
+        return ' '.join(cleaned[i:i+5] for i in range(0, len(cleaned), 5))
+    return text.replace(" ", "")
 
