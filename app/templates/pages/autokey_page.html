@@ -14,11 +14,11 @@
         <form class="p-5" method="post" action="/auto-key-vigenere-cipher/encrypt" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="formFile" class="form-label">Plain File</label>
-                <input class="form-control" name="file-plaintext" style="height: 40px;" type="file" id="formFile">
+                <input class="form-control" name="file-plaintext" style="height: 40px;" type="file" id="formFile"  onchange="readTextFile(this, 'plaintext-area')">
             </div>
             <div class="mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label">Plain Text</label>
-                <textarea class="form-control" name="plaintext" style="height: 150px;" id="exampleFormControlTextarea1" rows="3"></textarea>
+                <textarea class="form-control" name="plaintext" id="plaintext-area" style="height: 150px;" rows="3">{{ form.plaintext if form and form.plaintext else '' }}</textarea>
             </div>
             <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">Key</label>
@@ -35,11 +35,11 @@
         <form class="p-5" method="post" action="/auto-key-vigenere-cipher/decrypt">
             <div class="mb-3">
                 <label for="formFile" class="form-label">Cipher File</label>
-                <input class="form-control" name="file-ciphertext" style="height: 40px;" type="file" id="formFile">
+                <input class="form-control" name="file-ciphertext" style="height: 40px;" type="file" id="formFile" onchange="readTextFile(this, 'ciphertext-area')">
             </div>
             <div class="mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label">Cipher Text</label>
-                <textarea class="form-control" name="ciphertext" style="height: 150px;" id="exampleFormControlTextarea1" rows="3"></textarea>
+                <textarea class="form-control" name="ciphertext" id="ciphertext-area" style="height: 150px;" rows="3">{{ form.ciphertext if form and form.ciphertext else '' }}</textarea>
             </div>
             <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">Key</label>
@@ -101,6 +101,28 @@
             Download Hasil
         </button>
     </form>
+
+    <script>
+        function readTextFile(input, targetTextareaId) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            const textarea = document.getElementById(targetTextareaId);
+        
+            if (!file || !textarea) return;
+        
+            if (file.type.startsWith("text") || file.name.endsWith(".txt")) {
+                // File teks
+                reader.onload = function (e) {
+                    textarea.value = e.target.result;
+                };
+                reader.readAsText(file);
+            } else {
+                // File biner - tampilkan info saja
+                textarea.value = "[Non-text file loaded: " + file.name + "]";
+            }
+        }
+    </script>
+        
     
 
 {% endblock %}
