@@ -4,9 +4,9 @@ A simple web application for encrypting and decrypting text using six popular cr
 
 ## Supported Algorithms
 
-1. Caesar Cipher  
-2. Vigenère Cipher  
-3. Autokey Vigenère Cipher  
+1. Vigenere Cipher standard
+2. Auto-key Vigenere Cipher 
+3. Extended Vigenere Cipher (256 karakter ASCII) 
 4. Playfair Cipher  
 5. Affine Cipher  
 6. Hill Cipher
