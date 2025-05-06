@@ -1,0 +1,127 @@
+{% extends 'layout base/base_cipher.html' %} 
+{% block title %} 
+    Playfair Cipher
+{% endblock %}
+{% block heading %} 
+    Playfair Cipher
+{% endblock %}
+{% set cipher_route = url_for('playfair.playfair') %}
+
+{% block form_section %}
+    {% if encrypt %}
+    <!-- Encrypt Section -->
+    <div class="tab-pane fade show {{ 'active' if not decrypt }}" id="encrypt" role="tabpanel" aria-labelledby="encrypt-tab">
+        <form class="p-5" method="post" action="{{ cipher_route }}/encrypt" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Plain File</label>
+                <input class="form-control" name="file-plaintext" style="height: 40px;" type="file" id="formFile" onchange="readTextFile(this, 'plaintext-area')">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Plain Text</label>
+                <textarea class="form-control" name="plaintext" id="plaintext-area" style="height: 150px;" rows="3">{{ form.plaintext if form and form.plaintext else '' }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Key</label>
+                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Key">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-2" style="height: 50px;">Encrypt Now</button>
+        </form>
+    </div>
+    {% endif %}
+    
+    {% if not encrypt %}
+    <!-- Decrypt Section -->
+    <div class="tab-pane fade show {{ 'active' if not encrypt }}" id="decrypt" role="tabpanel" aria-labelledby="decrypt-tab">
+        <form class="p-5" method="post" action="{{ cipher_route }}/decrypt" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Cipher File</label>
+                <input class="form-control" name="file-ciphertext" style="height: 40px;" type="file" id="formFile" onchange="readTextFile(this, 'ciphertext-area')">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Cipher Text</label>
+                <textarea class="form-control" name="ciphertext" id="ciphertext-area" style="height: 150px;" rows="3">{{ form.ciphertext if form and form.ciphertext else '' }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Key</label>
+                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Key">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-2" style="height: 50px;">Decrypt Now</button>
+        </form>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block result_section %}
+    <h1 class="fw-bold">{{"Result"|upper}}</h1>
+
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label for="resultText" class="form-label">
+            {{ 'Cipher Text' if encrypt else 'Plain Text' }}
+        </label>
+        <textarea name="result" class="form-control" rows="6" readonly>{{ result_ciphertext or result_plaintext }}</textarea>
+    </div>
+
+    <!-- Format Options -->
+    <form method="POST" action="{{ url_for('playfair.playfairEncrypt' if encrypt else 'playfair.playfairDecrypt') }}">
+        <!-- Hidden fields to retain existing inputs -->
+        <input type="hidden" name="key" value="{{ form.get('key', '') }}">
+        {% if encrypt %}
+            <input type="hidden" name="plaintext" value="{{ form.get('plaintext', '') }}">
+        {% else %}
+            <input type="hidden" name="ciphertext" value="{{ form.get('ciphertext', '') }}">
+        {% endif %}
+    
+        <!-- Format Options -->
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="format" id="noSpace" value="normal"
+                   {% if form.get('format', 'normal') == 'normal' %}checked{% endif %}>
+            <label class="form-check-label" for="noSpace">Without space</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="format" id="group5" value="group5"
+                   {% if form.get('format') == 'group5' %}checked{% endif %}>
+            <label class="form-check-label" for="group5">Five-letter group</label>
+        </div>
+    
+        <!-- Button to trigger re-format -->
+        <button type="submit" class="btn btn-secondary w-100 mt-2">Reformat</button>
+    </form>    
+    
+    <!-- Download Button -->
+    <form method="POST" action="{{ url_for('playfair.download_result') }}">
+        <input type="hidden" name="result" value="{{ result_ciphertext if encrypt else result_plaintext }}">
+        <input type="hidden" name="filename" value="{{ 'ciphertext.txt' if encrypt else 'plaintext.txt' }}">
+        <button type="submit" class="btn btn-primary w-100 mt-2"
+                {% if not result_ciphertext and not result_plaintext %} disabled {% endif %}>
+            Download Hasil
+        </button>
+    </form>
+
+    <script>
+        function readTextFile(input, targetTextareaId) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            const textarea = document.getElementById(targetTextareaId);
+        
+            if (!file || !textarea) return;
+        
+            if (file.type.startsWith("text") || file.name.endsWith(".txt")) {
+                // File teks
+                reader.onload = function (e) {
+                    textarea.value = e.target.result;
+                };
+                reader.readAsText(file);
+            } else {
+                // File biner - tampilkan info saja
+                textarea.value = "[Non-text file loaded: " + file.name + "]";
+            }
+        }
+    </script>
+        
+{% endblock %}
