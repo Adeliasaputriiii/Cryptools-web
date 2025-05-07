@@ -82,11 +82,11 @@ def extendedVigenereEncryptByte():
         cipher = ExtendedVigenereCipher(key=key, plaintext=data)
         encrypted_bytes = cipher.encryptByte()
 
-        filename = secure_filename(file.filename) + ".enc"
+        original_name = file.filename.replace(".enc", "")
         return send_file(
             io.BytesIO(encrypted_bytes),
             as_attachment=True,
-            download_name=filename,
+            download_name=original_name,
             mimetype='application/octet-stream'
         )
     except Exception as e:
