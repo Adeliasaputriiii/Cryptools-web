@@ -31,14 +31,17 @@ def hillCipherEncrypt():
     try:
         key_input = request.form.get('key', '').strip()
         plaintext = request.form.get('plaintext', '').strip()
+        format_mode = request.form.get('format', 'normal')  # Ambil format
 
         # Validasi dan parsing key matrix melalui kelas HillCipher
-        cipher = HillCipher(key_string=key_input)  # Menggunakan key_string
-        encrypted_text = cipher.encrypt(plaintext)  # Enkripsi teks
+        cipher = HillCipher(key_string=key_input)
+        encrypted_text = cipher.encrypt(plaintext)
+
+        formatted_result = format_result(encrypted_text, format_mode)
 
         return render_template('pages/hill_page.html',
                                encrypt=True,
-                               result_ciphertext=encrypted_text,
+                               result_ciphertext=formatted_result,
                                result_plaintext=None,
                                error=None,
                                form=request.form)
@@ -55,15 +58,17 @@ def hillCipherDecrypt():
     try:
         key_input = request.form.get('key', '').strip()
         ciphertext = request.form.get('ciphertext', '').strip()
+        format_mode = request.form.get('format', 'normal')  # Ambil format
 
-        # Validasi dan parsing key matrix melalui kelas HillCipher
-        cipher = HillCipher(key_string=key_input)  # Menggunakan key_string
-        decrypted_text = cipher.decrypt(ciphertext)  # Dekripsi teks
+        cipher = HillCipher(key_string=key_input)
+        decrypted_text = cipher.decrypt(ciphertext)
+
+        formatted_result = format_result(decrypted_text, format_mode)
 
         return render_template('pages/hill_page.html',
                                encrypt=False,
                                result_ciphertext=None,
-                               result_plaintext=decrypted_text,
+                               result_plaintext=formatted_result,
                                error=None,
                                form=request.form)
     except Exception as e:
