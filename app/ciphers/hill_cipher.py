@@ -1,56 +1,69 @@
 import numpy as np
+import string
 
-MOD = 256  # Menggunakan rentang ASCII byte
+ALPHABET = string.ascii_uppercase
+ALPHABET_SIZE = len(ALPHABET)
 
-def parse_key(key_str):
-    rows = key_str.strip().split('\n')
-    matrix = [list(map(int, row.strip().split())) for row in rows]
-    return np.array(matrix)
+class HillCipher:
+    def __init__(self, key_string):
+        self.key_matrix = self.parse_key_matrix(key_string)
+    
+    def parse_key_matrix(self, key_string):
+        try:
+            rows = key_string.strip().split(',')
+            matrix = []
+            for row in rows:
+                numbers = list(map(int, row.strip().split()))
+                matrix.append(numbers)
 
-def mod_inv_matrix(matrix, modulus):
-    det = int(round(np.linalg.det(matrix))) % modulus
-    det_inv = pow(det, -1, modulus)
-    adj = np.round(det * np.linalg.inv(matrix)).astype(int) % modulus
-    return (det_inv * adj) % modulus
+            size = len(matrix)
+            if any(len(r) != size for r in matrix):
+                raise ValueError("Matrix harus berbentuk persegi, contoh: '3 3, 2 5'")
+            return np.array(matrix)
+        except Exception:
+            raise ValueError("Format matrix salah. Gunakan format: '3 3, 2 5'")
+    
+    def text_to_numbers(self, text):
+        return [ALPHABET.index(c) for c in text.upper() if c in ALPHABET]
 
-def prepare_text(text, size):
-    data = text.encode('utf-8')
-    if len(data) % size != 0:
-        pad_len = size - (len(data) % size)
-        data += bytes([0] * pad_len)
-    return data
+    def numbers_to_text(self, numbers):
+        return ''.join(ALPHABET[n % ALPHABET_SIZE] for n in numbers)
 
-def encrypt_text(plaintext, key_str, format_mode='nospace'):
-    key_matrix = parse_key(key_str)
-    size = key_matrix.shape[0]
-    data = prepare_text(plaintext, size)
+    def pad_text(self, text, size):
+        pad_len = (-len(text)) % size
+        return text + ('X' * pad_len)
 
-    result = bytearray()
-    for i in range(0, len(data), size):
-        block = np.array(list(data[i:i+size]), dtype=int)
-        encrypted = np.dot(key_matrix, block) % MOD
-        result.extend(encrypted.astype(np.uint8))
+    def encrypt(self, plain_text):
+        size = self.key_matrix.shape[0]
+        plain_text = self.pad_text(plain_text.upper().replace(" ", ""), size)
+        plain_numbers = self.text_to_numbers(plain_text)
+        cipher_numbers = []
 
-    output = result.decode('latin1')
-    if format_mode == 'grouped':
-        output = ' '.join([output[i:i+5] for i in range(0, len(output), 5)])
-    else:
-        output = output.replace(' ', '')
-    return output
+        for i in range(0, len(plain_numbers), size):
+            block = np.array(plain_numbers[i:i+size])
+            encrypted = self.key_matrix.dot(block) % ALPHABET_SIZE
+            cipher_numbers.extend(encrypted)
 
-def decrypt_text(ciphertext, key_str):
-    key_matrix = parse_key(key_str)
-    inv_matrix = mod_inv_matrix(key_matrix, MOD)
-    data = ciphertext.replace(' ', '').encode('latin1')
+        return self.numbers_to_text(cipher_numbers)
 
-    size = key_matrix.shape[0]
-    result = bytearray()
-    for i in range(0, len(data), size):
-        block = np.array(list(data[i:i+size]), dtype=int)
-        decrypted = np.dot(inv_matrix, block) % MOD
-        result.extend(np.round(decrypted).astype(np.uint8))
+    def decrypt(self, cipher_text):
+        try:
+            size = self.key_matrix.shape[0]
+            cipher_numbers = self.text_to_numbers(cipher_text.upper())
 
-    try:
-        return result.decode('utf-8').rstrip('\x00')  # hapus padding null
-    except UnicodeDecodeError:
-        return result.decode('latin1').rstrip('\x00')
+            det = int(round(np.linalg.det(self.key_matrix))) % ALPHABET_SIZE
+            det_inv = pow(det, -1, ALPHABET_SIZE)
+
+            matrix_mod_inv = (
+                det_inv * np.round(det * np.linalg.inv(self.key_matrix)).astype(int)
+            ) % ALPHABET_SIZE
+
+            plain_numbers = []
+            for i in range(0, len(cipher_numbers), size):
+                block = np.array(cipher_numbers[i:i+size])
+                decrypted = matrix_mod_inv.dot(block) % ALPHABET_SIZE
+                plain_numbers.extend(decrypted)
+
+            return self.numbers_to_text(plain_numbers)
+        except Exception:
+            return "Dekripsi gagal. Pastikan matrix bisa diinvers dan input benar."
