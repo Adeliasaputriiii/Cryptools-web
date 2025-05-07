@@ -1,0 +1,190 @@
+{% extends 'layout base/base_cipher.html' %} 
+{% block title %} 
+	Extended Vigenere Cipher
+{% endblock %}
+{% block heading %} 
+    Extended Vigenere Cipher
+{% endblock %}
+{% set cipher_route = url_for('extended.extendedVigenere') %}
+
+{% block form_section %}
+    {% if encrypt %}
+    <!--encrypt-->
+    <div class="tab-pane fade show {{ 'active' if not decrypt }}" id="encrypt" role="tabpanel" aria-labelledby="encrypt-tab">
+        <form class="p-5" method="post" enctype="multipart/form-data"
+              id="encrypt-form" action="/extended-vigenere-cipher/encrypt">
+
+            <!-- Encryption Type -->
+            <div class="mb-3">
+                <div class="form-group">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="encrypt_mode" id="encrypt-file"
+                            value="file" checked onchange="setEncryptAction()">
+                        <label class="form-check-label" for="encrypt-file">Encrypt File's value</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="encrypt_mode" id="encrypt-byte"
+                            value="byte" onchange="setEncryptAction()">
+                        <label class="form-check-label" for="encrypt-byte">Encrypt File's byte</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload File -->
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Plain File</label>
+                <input class="form-control" name="file-plaintext" style="height: 40px;" type="file" id="formFile" onchange="readTextFile(this, 'plaintext-area')">
+            </div>
+
+            <!-- Text Area -->
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Plain Text</label>
+                <textarea class="form-control" name="plaintext" id="plaintext-area" style="height: 150px;" rows="3">{{ form.plaintext if form and form.plaintext else '' }}</textarea>
+            </div>
+
+            <!-- Key Input -->
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Key</label>
+                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Key">
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary w-100 mt-2" style="height: 50px;">Encrypt Now</button>
+        </form>
+    </div>
+    {% endif %}
+
+    {% if not encrypt %}
+    <!--decrypt-->
+    <div class="tab-pane fade show {{ 'active' if decrypt }}" id="decrypt" role="tabpanel" aria-labelledby="decrypt-tab">
+        <form class="p-5" method="post" enctype="multipart/form-data"
+              id="decrypt-form" action="/extended-vigenere-cipher/decrypt">
+
+            <!-- Decryption Type -->
+            <div class="mb-3">
+                <div class="form-group">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="decrypt_mode" id="decrypt-file"
+                            value="file" checked onchange="setDecryptAction()">
+                        <label class="form-check-label" for="decrypt-file">Decrypt File's value</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="decrypt_mode" id="decrypt-byte"
+                            value="byte" onchange="setDecryptAction()">
+                        <label class="form-check-label" for="decrypt-byte">Decrypt File's byte</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload File -->
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Cipher File</label>
+                <input class="form-control" name="file-ciphertext" style="height: 40px;" type="file" id="formFile" onchange="readTextFile(this, 'ciphertext-area')">
+            </div>
+
+            <!-- Text Area -->
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Cipher Text</label>
+                <textarea class="form-control" name="ciphertext" id="ciphertext-area" style="height: 150px;" rows="3">{{ form.ciphertext if form and form.ciphertext else '' }}</textarea>
+            </div>
+
+            <!-- Key Input -->
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Key</label>
+                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Key">
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary w-100 mt-2" style="height: 50px;">Decrypt Now</button>
+        </form>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block result_section %}
+    <h1 class="fw-bold">{{"Result"|upper}}</h1>
+
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label for="resultText" class="form-label">
+            {{ 'Cipher Text' if encrypt else 'Plain Text' }}
+        </label>
+        <textarea name="result" class="form-control" rows="6" readonly>{{ result_ciphertext or result_plaintext }}</textarea>
+    </div>
+
+    <!-- Format Options -->
+    <form method="POST" action="{{ url_for('extended.extendedVigenereEncrypt' if encrypt else 'extended.extendedVigenereDecrypt') }}">
+        <input type="hidden" name="key" value="{{ form.get('key', '') }}">
+        {% if encrypt %}
+            <input type="hidden" name="plaintext" value="{{ form.get('plaintext', '') }}">
+        {% else %}
+            <input type="hidden" name="ciphertext" value="{{ form.get('ciphertext', '') }}">
+        {% endif %}
+
+        <!-- Format -->
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="format" id="noSpace" value="normal"
+                   {% if form.get('format', 'normal') == 'normal' %}checked{% endif %}>
+            <label class="form-check-label" for="noSpace">Without space</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="format" id="group5" value="group5"
+                   {% if form.get('format') == 'group5' %}checked{% endif %}>
+            <label class="form-check-label" for="group5">Five-letter group</label>
+        </div>
+
+        <button type="submit" class="btn btn-secondary w-100 mt-2">Reformat</button>
+    </form>    
+
+    <!-- Download -->
+    <form method="POST" action="{{ url_for('extended.download_result') }}">
+        <input type="hidden" name="result" value="{{ result_ciphertext if encrypt else result_plaintext }}">
+        <input type="hidden" name="filename" value="{{ 'ciphertext.txt' if encrypt else 'plaintext.txt' }}">
+        <button type="submit" class="btn btn-primary w-100 mt-2"
+                {% if not result_ciphertext and not result_plaintext %} disabled {% endif %}>
+            Download Hasil
+        </button>
+    </form>
+
+    <script>
+        function readTextFile(input, targetTextareaId) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            const textarea = document.getElementById(targetTextareaId);
+
+            if (!file || !textarea) return;
+
+            if (file.type.startsWith("text") || file.name.endsWith(".txt")) {
+                reader.onload = function (e) {
+                    textarea.value = e.target.result;
+                };
+                reader.readAsText(file);
+            } else {
+                textarea.value = "[Non-text file loaded: " + file.name + "]";
+            }
+        }
+
+        function setEncryptAction() {
+            const form = document.getElementById('encrypt-form');
+            const mode = document.querySelector('input[name="encrypt_mode"]:checked').value;
+            form.action = mode === 'byte' ? '/extended-vigenere-cipher/encrypt-byte' : '/extended-vigenere-cipher/encrypt';
+        }
+
+        function setDecryptAction() {
+            const form = document.getElementById('decrypt-form');
+            const mode = document.querySelector('input[name="decrypt_mode"]:checked').value;
+            form.action = mode === 'byte' ? '/extended-vigenere-cipher/decrypt-byte' : '/extended-vigenere-cipher/decrypt';
+        }
+
+        // Apply on load in case default selection differs
+        window.onload = function () {
+            setEncryptAction();
+            setDecryptAction();
+        };
+    </script>
+{% endblock %}
