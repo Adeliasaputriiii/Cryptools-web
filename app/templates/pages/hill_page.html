@@ -1,0 +1,202 @@
+{% extends 'layout base/base_cipher.html' %} {% block title %} Hill Cipher {%
+endblock %} {% block heading %} Hill Cipher {% endblock %} {% set cipher_route =
+url_for('hill.hillCipher') %} {% block form_section %} {% if encrypt %}
+<!-- Encrypt -->
+<div class="tab-pane fade show active" id="encrypt" role="tabpanel">
+  <form
+    class="p-5"
+    method="post"
+    action="{{ url_for('hill.hillEncrypt') }}"
+    enctype="multipart/form-data"
+  >
+    <div class="mb-3">
+      <label for="formFile" class="form-label">Plain File</label>
+      <input
+        class="form-control"
+        name="file-plaintext"
+        type="file"
+        id="formFile"
+        onchange="readTextFile(this, 'plaintext-area')"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="plaintext-area" class="form-label">Plain Text</label>
+      <textarea
+        class="form-control"
+        name="plaintext"
+        id="plaintext-area"
+        rows="4"
+      >
+    {{- form.plaintext if form and form.plaintext else '' -}}</textarea
+      >
+    </div>
+    <div class="mb-3">
+      <label for="key-area" class="form-label">Key Matrix</label>
+      <textarea
+        class="form-control"
+        name="key"
+        id="key-area"
+        rows="3"
+        placeholder="Contoh: 3 3
+                   2 5"
+      >
+      {{- form.key if form and form.key else '' -}}</textarea
+      >
+    </div>
+    <button type="submit" class="btn btn-primary">Encrypt</button>
+  </form>
+</div>
+{% else %}
+<!-- Decrypt -->
+<div class="tab-pane fade show active" id="decrypt" role="tabpanel">
+  <form
+    class="p-5"
+    method="post"
+    action="{{ url_for('hill.hillDecrypt') }}"
+    enctype="multipart/form-data"
+  >
+    <div class="mb-3">
+      <label for="formFile" class="form-label">Cipher File</label>
+      <input
+        class="form-control"
+        name="file-ciphertext"
+        type="file"
+        id="formFile"
+        onchange="readTextFile(this, 'ciphertext-area')"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="ciphertext-area" class="form-label">Cipher Text</label>
+      <textarea
+        class="form-control"
+        name="ciphertext"
+        id="ciphertext-area"
+        rows="4"
+      >
+      {{- form.ciphertext if form and form.ciphertext else '' -}}</textarea
+      >
+    </div>
+    <div class="mb-3">
+      <label for="key-area" class="form-label">Key Matrix</label>
+      <textarea
+        class="form-control"
+        name="key"
+        id="key-area"
+        rows="3"
+        placeholder="Contoh: 3 3
+                   2 5"
+      >
+      {{- form.key if form and form.key else '' -}}</textarea
+      >
+    </div>
+    <button type="submit" class="btn btn-primary">Decrypt</button>
+  </form>
+</div>
+{% endif %} {% endblock %} {% block result_section %}
+<h1 class="fw-bold">{{"Result"|upper}}</h1>
+
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+
+<div class="mb-3">
+  <label for="resultText" class="form-label">
+    {{ 'Cipher Text' if encrypt else 'Plain Text' }}
+  </label>
+  <textarea name="result" class="form-control" rows="6" readonly>
+      {{- result_ciphertext or result_plaintext -}}</textarea
+  >
+</div>
+
+<!-- Format Options -->
+<form
+  method="POST"
+  action="{{ url_for('hill.hillEncrypt' if encrypt else 'hill.hillDecrypt') }}"
+>
+  <!-- Hidden fields to retain existing inputs -->
+  <input type="hidden" name="key" value="{{ form.get('key', '') }}" />
+  {% if encrypt %}
+  <input
+    type="hidden"
+    name="plaintext"
+    value="{{ form.get('plaintext', '') }}"
+  />
+  {% else %}
+  <input
+    type="hidden"
+    name="ciphertext"
+    value="{{ form.get('ciphertext', '') }}"
+  />
+  {% endif %}
+
+  <!-- Format Options -->
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="format" id="noSpace"
+    value="normal" {% if form.get('format', 'normal') == 'normal' %}checked{%
+    endif %}>
+    <label class="form-check-label" for="noSpace">Without space</label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="format" id="group5"
+    value="group5" {% if form.get('format') == 'group5' %}checked{% endif %}>
+    <label class="form-check-label" for="group5">Five-letter group</label>
+  </div>
+
+  <!-- Button to trigger re-format -->
+  <button type="submit" class="btn btn-secondary w-100 mt-2">Reformat</button>
+</form>
+
+<!-- Download Button -->
+<form method="POST" action="{{ url_for('hill.download_result') }}">
+  <input
+    type="hidden"
+    name="result"
+    value="{{ result_ciphertext if encrypt else result_plaintext }}"
+  />
+  <input
+    type="hidden"
+    name="filename"
+    value="{{ 'ciphertext.txt' if encrypt else 'plaintext.txt' }}"
+  />
+  <button
+    type="submit"
+    class="btn btn-primary w-100 mt-2"
+    {%
+    if
+    not
+    result_ciphertext
+    and
+    not
+    result_plaintext
+    %}
+    disabled
+    {%
+    endif
+    %}
+  >
+    Download Hasil
+  </button>
+</form>
+
+<script>
+  function readTextFile(input, targetTextareaId) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    const textarea = document.getElementById(targetTextareaId);
+
+    if (!file || !textarea) return;
+
+    if (file.type.startsWith("text") || file.name.endsWith(".txt")) {
+      // File teks
+      reader.onload = function (e) {
+        textarea.value = e.target.result;
+      };
+      reader.readAsText(file);
+    } else {
+      // File biner - tampilkan info saja
+      textarea.value = "[Non-text file loaded: " + file.name + "]";
+    }
+  }
+</script>
+
+{% endblock %}
