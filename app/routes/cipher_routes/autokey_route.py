@@ -27,6 +27,8 @@ def autoKeyVigenere():
                            error=error,
                            form=request.form)
 
+    
+
 @autokey_bp.route('/auto-key-vigenere-cipher/encrypt', methods=['POST'])
 def autoKeyVigenereEncrypt():
     try:
@@ -49,16 +51,20 @@ def autoKeyVigenereEncrypt():
             raise ValueError("Key tidak boleh kosong.")
         if not plaintext:
             raise ValueError("Plaintext tidak boleh kosong (baik dari form maupun file).")
+        
 
         cipher = AutoKeyVigenereCipher(key=key, plaintext=plaintext)
         result = cipher.encrypt()
         formatted_result = format_result(result, format_mode)
 
+        cleaned_plaintext = ''.join(plaintext.split())
+        key += cleaned_plaintext[:len(cleaned_plaintext) - len(key)]  
+
         return render_template('pages/autokey_page.html',
                                encrypt=True,
                                result_ciphertext=formatted_result,
                                result_plaintext=None,
-                               form={'plaintext': plaintext, 'key': key})
+                               form={'plaintext': plaintext, 'key': key.lower()})
     except Exception as e:
         return render_template('pages/autokey_page.html',
                                encrypt=True,
@@ -88,17 +94,19 @@ def autoKeyVigenereDecrypt():
         if not key:
             raise ValueError("Key tidak boleh kosong.")
         if not ciphertext:
-            raise ValueError("Ciphertext tidak boleh kosong (baik dari form maupun file).")
+            raise ValueError("Ciphertext tidak boleh kosong.")
 
-        cipher = AutoKeyVigenereCipher(key=key, ciphertext=ciphertext)
-        result = cipher.decrypt()
+        plain = AutoKeyVigenereCipher(key=key, ciphertext=ciphertext)
+        result = plain.decrypt()
         formatted_result = format_result(result, format_mode)
 
+        key += result[:len(ciphertext) - len(key)]
+         
         return render_template('pages/autokey_page.html',
                                encrypt=False,
                                result_plaintext=formatted_result,
                                result_ciphertext=None,
-                               form={'ciphertext': ciphertext, 'key': key})
+                               form={'ciphertext': ciphertext, 'key': key.lower()})  # lowercase key for display
     except Exception as e:
         return render_template('pages/autokey_page.html',
                                encrypt=False,
@@ -124,7 +132,7 @@ def download_result():
 
 def format_result(text, mode):
     if mode == 'group5':
-        cleaned = text.replace(" ", "")  # hilangkan spasi dulu
+        cleaned = text.replace(" ", "")
         return ' '.join(cleaned[i:i+5] for i in range(0, len(cleaned), 5))
     return text.replace(" ", "")
 

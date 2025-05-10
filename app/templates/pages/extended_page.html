@@ -32,20 +32,20 @@
 
             <!-- Upload File -->
             <div class="mb-3">
-                <label for="formFile" class="form-label">Plain File</label>
+                <label for="formFile" class="form-label text-start d-block">Plain File</label>
                 <input class="form-control" name="file-plaintext" style="height: 40px;" type="file" id="formFile" onchange="readTextFile(this, 'plaintext-area')">
             </div>
 
             <!-- Text Area -->
             <div class="mb-3">
-                <label for="exampleFormControlTextarea1" class="form-label">Plain Text</label>
-                <textarea class="form-control" name="plaintext" id="plaintext-area" style="height: 150px;" rows="3">{{ form.plaintext if form and form.plaintext else '' }}</textarea>
+                <label for="exampleFormControlTextarea1" class="form-label text-start d-block">Plain Text</label>
+                <textarea class="form-control" name="plaintext" id="plaintext-area" style="height: 150px;" rows="3" placeholder="Input Plaintext">{{ form.plaintext if form and form.plaintext else '' }}</textarea>
             </div>
 
             <!-- Key Input -->
             <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Key</label>
-                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Key">
+                <label for="exampleFormControlInput1" class="form-label text-start d-block">Key</label>
+                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Input Key">
             </div>
 
             <!-- Submit -->
@@ -78,20 +78,20 @@
 
             <!-- Upload File -->
             <div class="mb-3">
-                <label for="formFile" class="form-label">Cipher File</label>
+                <label for="formFile" class="form-label text-start d-block">Cipher File</label>
                 <input class="form-control" name="file-ciphertext" style="height: 40px;" type="file" id="formFile" onchange="readTextFile(this, 'ciphertext-area')">
             </div>
 
             <!-- Text Area -->
             <div class="mb-3">
-                <label for="exampleFormControlTextarea1" class="form-label">Cipher Text</label>
-                <textarea class="form-control" name="ciphertext" id="ciphertext-area" style="height: 150px;" rows="3">{{ form.ciphertext if form and form.ciphertext else '' }}</textarea>
+                <label for="exampleFormControlTextarea1" class="form-label text-start d-block">Cipher Text</label>
+                <textarea class="form-control" name="ciphertext" id="ciphertext-area" style="height: 150px;" rows="3" placeholder="Input Ciphertext">{{ form.ciphertext if form and form.ciphertext else '' }}</textarea>
             </div>
 
             <!-- Key Input -->
             <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Key</label>
-                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Key">
+                <label for="exampleFormControlInput1" class="form-label text-start d-block">Key</label>
+                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Input Key">
             </div>
 
             <!-- Submit -->
@@ -111,10 +111,10 @@
     {% endif %}
 
     <div class="mb-3">
-        <label for="resultText" class="form-label">
+        <label for="resultText" class="form-label text-start d-block">
             {{ 'Cipher Text' if encrypt else 'Plain Text' }}
         </label>
-        <textarea name="result" class="form-control" rows="6" readonly>{{ result_ciphertext or result_plaintext }}</textarea>
+        <textarea name="result" class="form-control" rows="6" readonly>{{ (result_ciphertext or result_plaintext) if (result_ciphertext or result_plaintext) else '' }}</textarea>
     </div>
 
     <!-- Format Options -->

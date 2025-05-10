@@ -13,16 +13,16 @@
     <div class="tab-pane fade show {{ 'active' if not decrypt }}" id="encrypt" role="tabpanel" aria-labelledby="encrypt-tab">
         <form class="p-5" method="post" action="/standar-vigenere-cipher/encrypt" enctype="multipart/form-data">
             <div class="mb-3">
-                <label for="formFile" class="form-label">Plain File</label>
-                <input class="form-control" name="file-plaintext" style="height: 40px;" type="file" id="formFile"  onchange="readTextFile(this, 'plaintext-area')">
+                <label for="formFile" class="form-label text-start d-block">Plain File</label>
+                <input class="form-control" name="file-plaintext" style="height: 40px;" type="file" id="formFile" accept=".txt" onchange="readTextFile(this, 'plaintext-area')">
             </div>
             <div class="mb-3">
-                <label for="exampleFormControlTextarea1" class="form-label">Plain Text</label>
-                <textarea class="form-control" name="plaintext" id="plaintext-area" style="height: 150px;" rows="3">{{ form.plaintext if form and form.plaintext else '' }}</textarea>
+                <label for="exampleFormControlTextarea1" class="form-label text-start d-block">Plain Text</label>
+                <textarea class="form-control" name="plaintext" id="plaintext-area" style="height: 150px;" rows="3" placeholder="Input Plaintext">{{ form.plaintext if form and form.plaintext else '' }}</textarea>
             </div>
             <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Key</label>
-                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Key">
+                <label for="exampleFormControlInput1" class="form-label text-start d-block">Key</label>
+                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Input Key">
             </div>
             <button type="submit" class="btn btn-primary w-100 mt-2" style="height: 50px;">Encrypt Now</button>
         </form>
@@ -34,16 +34,16 @@
     <div class="tab-pane fade show {{ 'active' if not encrypt }}" id="decrypt" role="tabpanel" aria-labelledby="decrypt-tab enctype="multipart/form-data"">
         <form class="p-5" method="post" action="/standard-vigenere-cipher/decrypt">
             <div class="mb-3">
-                <label for="formFile" class="form-label">Cipher File</label>
-                <input class="form-control" name="file-ciphertext" style="height: 40px;" type="file" id="formFile" onchange="readTextFile(this, 'ciphertext-area')">
+                <label for="formFile" class="form-label text-start d-block">Cipher File</label>
+                <input class="form-control" name="file-ciphertext" style="height: 40px;" type="file" id="formFile" accept=".txt" onchange="readTextFile(this, 'ciphertext-area')">
             </div>
             <div class="mb-3">
-                <label for="exampleFormControlTextarea1" class="form-label">Cipher Text</label>
-                <textarea class="form-control" name="ciphertext" id="ciphertext-area" style="height: 150px;" rows="3">{{ form.ciphertext if form and form.ciphertext else '' }}</textarea>
+                <label for="exampleFormControlTextarea1" class="form-label text-start d-block">Cipher Text</label>
+                <textarea class="form-control" name="ciphertext" id="ciphertext-area" style="height: 150px;" rows="3" placeholder="Input Ciphertext">{{ form.ciphertext if form and form.ciphertext else '' }}</textarea>
             </div>
             <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Key</label>
-                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Key">
+                <label for="exampleFormControlInput1" class="form-label text-start d-block">Key</label>
+                <input type="text" class="form-control" name="key" style="height: 40px;" id="exampleFormControlInput1" placeholder="Input Key">
             </div>
             <button type="submit" class="btn btn-primary w-100 mt-2" style="height: 50px;">Decrypt Now</button>
         </form>
@@ -60,10 +60,10 @@
     {% endif %}
 
     <div class="mb-3">
-        <label for="resultText" class="form-label">
+        <label for="resultText" class="form-label text-start d-block">
             {{ 'Cipher Text' if encrypt else 'Plain Text' }}
         </label>
-        <textarea name="result" class="form-control" rows="6" readonly>{{ result_ciphertext or result_plaintext }}</textarea>
+        <textarea name="result" class="form-control" rows="6" readonly>{{ (result_ciphertext or result_plaintext) if (result_ciphertext or result_plaintext) else '' }}</textarea>
     </div>
 
     <!-- Format Options -->

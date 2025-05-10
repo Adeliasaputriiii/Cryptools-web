@@ -13,6 +13,7 @@ class AutoKeyVigenereCipher:
     # Ambil hanya huruf A-Z dari text
         filtered_text = ''.join(c for c in text if c in self.alphabet)
         return (self.key + filtered_text)[:len(filtered_text)]
+     
 
     def encrypt(self):
         if not self.plaintext:
@@ -54,4 +55,5 @@ class AutoKeyVigenereCipher:
                 key = key[1:]
 
         self.result = ''.join(result)
+        self.used_key = key[:len(result)]
         return self.result
