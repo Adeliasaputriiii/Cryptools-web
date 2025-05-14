@@ -14,8 +14,8 @@ A simple web application for encrypting and decrypting text using six popular cr
 ✅ Status: This project has been completed. All core features are functional.
 
 ## Preview
-![App Screenshot](App/static/images/Dashboard.png)
-![App Screenshot](App/static/images/FormPage.png)
+![App Screenshot](app/static/images/Dashboard.png)
+![App Screenshot](app/static/images/FormPage.png)
 
 ## How to Run?
 
