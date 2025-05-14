@@ -11,7 +11,11 @@ A simple web application for encrypting and decrypting text using six popular cr
 5. Affine Cipher  
 6. Hill Cipher
 
-+ ✅ Status: This project has been completed. All core features are functional and stable.
+✅ Status: This project has been completed. All core features are functional.
+
+## Preview
+![App Screenshot](App/static/images/Dashboard.png)
+![App Screenshot](App/static/images/FormPage.png)
 
 ## How to Run?
 
