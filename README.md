@@ -11,7 +11,7 @@ A simple web application for encrypting and decrypting text using six popular cr
 5. Affine Cipher  
 6. Hill Cipher
 
-> ⚠️ **Note:** This project is still in progress (on-going development). Some features may be incomplete or subject to change.
++ ✅ Status: This project has been completed. All core features are functional and stable.
 
 ## How to Run?
 
