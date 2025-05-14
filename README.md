@@ -22,4 +22,6 @@ A simple web application for encrypting and decrypting text using six popular cr
 ```bash
 cd app
 python app.py
+```
 
+Thank you for using this app. We hope this app can help you better understand classic cryptographic algorithms and how they work in practice.
