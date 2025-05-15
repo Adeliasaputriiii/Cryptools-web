@@ -11,11 +11,17 @@ A simple web application for encrypting and decrypting text using six popular cr
 5. Affine Cipher  
 6. Hill Cipher
 
-> ⚠️ **Note:** This project is still in progress (on-going development). Some features may be incomplete or subject to change.
+✅ Status: This project has been completed. All core features are functional.
+
+## Preview
+![App Screenshot](app/static/images/Dashboard.png)
+![App Screenshot](app/static/images/FormPage.png)
 
 ## How to Run?
 
 ```bash
 cd app
 python app.py
+```
 
+Thank you for using this app. We hope this app can help you better understand classic cryptographic algorithms and how they work in practice.
